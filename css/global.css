@@ -1,0 +1,82 @@
+.prevent-selection {
+  user-select: none;
+}
+
+body {
+    background-repeat: no-repeat;
+}
+
+#blur-panel {
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Clock CSS */
+#clock-container {
+    font-size: 10vw;
+    font-weight: normal;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    display: inline-block;
+}
+
+#indicator {
+    font-size: 1.5vw;
+}
+
+#date {
+    font-size: 1.5vw;
+    padding-top: 5px;
+}
+
+/* Menu CSS */
+#menu-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+}
+
+.menu-options-hide {
+    display: none;
+}
+
+.menu-options-show {
+    border-radius: 10px;
+    display: block;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: #ffffff;
+    padding: 10px;
+    max-height: 75vh;
+    overflow: auto;
+    max-width: 15vw;
+    min-width: 250px;
+    box-shadow: 6px 8px 4px rgba(0, 0, 0, 0.2);
+}
+
+.color-block {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#time-duration {
+    font-weight: bold;
+}
+
+/* Seconds progress bar */
+#seconds-progress-bar {
+  position: absolute;
+  bottom: 1;
+  height: 5px;
+  border-radius: 5px;
+  background-color: #212529;
+  display: none; /* Disable display by default */
+  transition: width 0.75s;
+}

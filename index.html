@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en" class="prevent-selection">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self' 'unsafe-inline'">
+        <title>Online Web Clock</title>
+        <!-- CSS -->
+        <link href="./css/global.css" rel="stylesheet">
+        <link href="./css/fonts.css" rel="stylesheet">
+        <link href="./css/bootstrap.4.6.2.min.css" rel="stylesheet">
+        <!-- JS -->
+        <script src="./js/luxon.min.js"></script>
+        <script src="./js/corejs.minified.min.js"></script>
+        <script src="./js/jquery.3.5.1.min.js"></script>
+        <script src="./js/bootstrap.4.6.2.bundle.min.js"></script>
+        <script src="./js/numberToWords.min.js"></script>
+        <script src="./js/global.js" defer></script>
+        <script src="./js/background-color.js" defer></script>
+        <script src="./js/background-image.js" defer></script>
+        <script src="./js/clock-new.js" defer></script>
+        <script src="./js/clock-color.js" defer></script>
+        <script src="./js/importExportJSON.js" defer></script>
+        <!-- Favicon -->
+        <link rel="icon" type="image/x-icon" id="favicon" href="./icons/clock-time-12.ico">
+    </head>
+    <body>
+        <div id="blur-panel"></div>
+        <div id="menu-container">
+            <button id="open-button" class="btn btn-secondary" style="width: 100px;">
+                Menu
+            </button>
+            <button id="close-button" class="btn btn-danger" style="display: none; position: absolute; top: 0px; right: 0px; width: 100px;">
+                Close
+            </button>
+            <div id="menu-options" class="menu-options-hide">
+                <div class="accordion" id="menuAccordion">
+                    <div class="card">
+                        <div class="card-header" id="headingOne">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseCO" aria-expanded="true" aria-controls="collapseCO">
+                                    Time Settings
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapseCO" class="collapse show" aria-labelledby="headingOne" data-bs-parent="#menuAccordion">
+                            <div class="card-body">
+                                <h6 class="mb-1">Clock Mode</h6>
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons" aria-label="Clock mode button group" id="clock-mode-group">
+                                    <label class="btn btn-secondary active">
+                                        <input type="radio" name="clock-mode-radio" data-value="0" id="cmo12" checked> 12-hour
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="clock-mode-radio" data-value="1" id="cmo24"> 24-hour
+                                    </label>
+                                </div>
+                                <h6 class="mb-1 mt-2">Display System</h6>
+                                <select class="custom-select" id="timeMethodSelect">
+                                    <optgroup label="Radix Systems">
+                                        <option value="binary">Binary (Base 2)</option>
+                                        <option value="octal">Octal (Base 8)</option>
+                                        <option value="decimal" selected>Decimal (Base 10)</option>
+                                        <option value="hexa">Hexadecimal (Base 16)</option>
+                                        <option value="hexatri">Hexatrigesimal (Base 36)</option>
+                                    </optgroup>
+                                    <optgroup label="Conversions">
+                                        <option value="emoji">Emoji (1️⃣2️⃣:0️⃣0️⃣)</option>
+                                        <option value="roman">Roman Numeral (XII:00)</option>
+                                        <option value="words">Words (twelve:o'clock)</option>
+                                    </optgroup>
+                                    <optgroup label="Experimental...">
+                                        <option value="unixmillis">Unix timestamp (Milliseconds)</option>
+                                        <option value="unixsec">Unix timestamp (Seconds)</option>
+                                        <option value="unixcountdown">Time until Y2K38 problem</option>
+                                    </optgroup>  
+                                </select>
+                                <h6 class="mb-1 mt-2">Seconds Display</h6>
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons" aria-label="Seconds visibility button group">
+                                    <label class="btn btn-secondary active">
+                                        <input type="radio" name="seconds-vis-radio" data-value="" id="sviD" checked> Show
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="seconds-vis-radio" data-value="none" id="sviN"> Hide
+                                    </label>
+                                </div>
+                                <hr>
+                                <h6 class="mb-1 mt-2">Date Display</h6>
+                                <select class="custom-select" id="dateFormatSelect">
+                                    <option value="D" id="dateVisOp1"></option>
+                                    <option value="DD" id="dateVisOp2"></option>
+                                    <option value="DDD" id="dateVisOp3"></option>
+                                    <option value="DDDD" id="dateVisOp4"></option>
+                                    <option value="" id="dateVisOp5">Off</option>
+                                </select>
+                                <h6 class="mb-1 mt-2">Date Alignment</h6>
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons" aria-label="Date position button group">
+                                    <label class="btn btn-secondary active">
+                                        <input type="radio" name="date-position-radio" data-value="left" id="dpoL" checked> Left
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="date-position-radio" data-value="center" id="dpoC"> Center
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="date-position-radio" data-value="right" id="dpoR"> Right
+                                    </label>
+                                </div>
+                                <hr>
+                                <h6 class="mb-1 mt-2">Border Style</h6>
+                                <div class="btn-group btn-group-toggle mb-2" data-toggle="buttons" aria-label="Clock border radio button group">
+                                    <label class="btn btn-secondary active">
+                                        <input type="radio" name="border-type-radio" data-value="none" id="btyD" checked> None
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="border-type-radio" data-value="regular" id="btyR"> Box
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="border-type-radio" data-value="bottom" id="btyB"> Bottom
+                                    </label>
+                                </div>
+                                <select class="custom-select" id="borderStyleSelect" disabled>
+                                    <option value="solid" selected>Solid</option>
+                                    <option value="dashed">Dashed</option>
+                                    <option value="dotted">Dotted</option>
+                                    <option value="double">Double</option>
+                                </select>
+                                <h6 class="mb-1 mt-2">Seconds Bar Visibility</h6>
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons" aria-label="Seconds bar visibility button group">
+                                    <label class="btn btn-secondary active">
+                                        <input type="radio" name="seconds-bar-radio" data-value="none" id="sbaN" checked> Hide
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="seconds-bar-radio" data-value="block" id="sbaB"> Show
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseFO" aria-expanded="false" aria-controls="collapseFO">
+                                Font Customization
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapseFO" class="accordion-collapse collapse" data-bs-parent="#menuAccordion">
+                            <div class="card-body">
+                                <h6 class="mb-1">Font Family</h6>
+                                <select class="custom-select" id="fontFamilySelect">
+                                    <option value="" selected>System default</option>
+                                    <optgroup label="Sans-Serif">
+                                        <option value="Lato">Lato</option>
+                                        <option value="Montserrat">Montserrat</option>
+                                        <option value="Open Sans">Open Sans</option>
+                                        <option value="Oswald">Oswald</option>
+                                        <option value="Poppins">Poppins</option>
+                                        <option value="Roboto">Roboto</option>
+                                        <option value="Tektur">Tektur</option>
+                                        <option value="Ubuntu">Ubuntu</option>
+                                        <option value="Ubuntu Mono">Ubuntu Mono</option>
+                                    </optgroup>
+                                    <optgroup label="Serif">
+                                        <option value="Dancing Script">Dancing Script</option>
+                                        <option value="Merriweather">Merriweather</option>
+                                    </optgroup>
+                                    <optgroup label="Handwritten">
+                                        <option value="Nanum Brush Script">Nanum Brush Script</option>
+                                        <option value="Pangolin">Pangolin</option>
+                                    </optgroup>
+                                </select>
+                                <h6 class="mb-1 mt-2">Custom Font</h6>
+                                <input class="form-control" type="text" placeholder="Enter font name" aria-label="Custom font input form" id="customFontInputForm">
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-outline-primary" id="applyCustomFontButton">Submit</button>
+                                </div>
+                                <h6 class="mb-1 mt-1">Font Style</h6>
+                                    <div class="btn-group btn-group-toggle" data-toggle="buttons" aria-label="Font style button group" id="font-style-group">
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="font-style-radio" data-value="normal" id="fstR" checked> Regular
+                                        </label>
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="font-style-radio" data-value="italic" id="fstI"> Italic
+                                        </label>
+                                    </div>
+                                <h6 class="mb-1 mt-2">Font Weight</h6>
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons" aria-label="Font weight button group" id="font-weight-group">
+                                    <label class="btn btn-secondary active">
+                                        <input type="radio" name="font-weight-radio" data-value="lighter" id="fweL"> Light
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="font-weight-radio" data-value="normal" id="fweN" checked> Normal
+                                    </label>
+                                    <label class="btn btn-secondary active">
+                                        <input type="radio" name="font-weight-radio" data-value="bold" id="fweB"> Bold
+                                    </label>
+                                </div>
+                                <h6 class="mb-1 mt-2">Font Size</h6>
+                                <select class="custom-select" id="sizeSelect">
+                                    <option value="6vw">Smaller (6vw)</option>
+                                    <option value="8vw">Small (8vw)</option>
+                                    <option value="10vw" selected>Default (10vw)</option>
+                                    <option value="12vw">Large (12vw)</option>
+                                    <option value="14vw">Larger (14vw)</option>
+                                    <option value="18vw">Huge (18vw)</option>
+                                </select>
+                                <hr>
+                                <h6 class="mb-1">Text Effects</h6>
+                                <label for="dropShadowRange" class="form-label" id="dropShadowRangeLabel">Drop shadow: 0px</label>
+                                <input type="range" class="form-range" id="dropShadowRange" min="0" max="10" value="0" step="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseCoO" aria-expanded="false" aria-controls="collapseCoO">
+                                Background Theme
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapseCoO" class="accordion-collapse collapse" data-bs-parent="#menuAccordion">
+                            <div class="card-body">
+                                <h6 class="mb-1">Background Color Mode</h6>
+                                <div class="form-group">
+                                    <div class="btn-group btn-group-toggle" data-toggle="buttons" aria-label="Color mode button group">
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="color-mode-radio" id="fademode" checked> Color Fade
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="color-mode-radio" id="solidmode"> Solid
+                                        </label>
+                                    </div>
+                                    <div class="btn-group btn-group-toggle" data-toggle="buttons" aria-label="Color mode button group">
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="color-mode-radio" id="imgmode"> Use Custom Image
+                                        </label>
+                                    </div>
+                                    <p class="mt-2 mb-0">Current color: <span class="badge text-bg-secondary" id="current-color-badge">#000000</span></p>
+                                </div>
+                                <div class="form-group mt-2" id="presetColorGroup" style="display: none;">
+                                    <hr>
+                                    <!-- Basic colors -->
+                                    <h6 class="mb-1 mt-2">Basic colors</h6>
+                                    <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons" aria-label="Solid color button group">
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="preset-color-radio" data-color="#FF0000" id="basicred"><div class="color-block" style="background-color: #FF0000;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#FFA500" id="basicorange"><div class="color-block" style="background-color: #FFA500;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#FFFF00" id="basicyellow"><div class="color-block" style="background-color: #FFFF00;"></div>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons" aria-label="Solid color button group">
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="preset-color-radio" data-color="#00FF00" id="basicgreen"><div class="color-block" style="background-color: #00FF00;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#0000FF" id="basicblue"><div class="color-block" style="background-color: #0000FF;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#FF00FF" id="basicmagenta"><div class="color-block" style="background-color: #FF00FF;"></div>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons" aria-label="Solid color button group">
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="preset-color-radio" data-color="#FFFFFF" id="basicwhite"><div class="color-block" style="background-color: #FFFFFF;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#808080" id="basicgray"><div class="color-block" style="background-color: #808080;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#000000" id="basicblack"><div class="color-block" style="background-color: #000000;"></div>
+                                        </label>
+                                    </div>
+                                    <!-- Pale colors -->
+                                    <h6 class="mb-1 mt-2">Bright colors</h6>
+                                    <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons" aria-label="Solid color button group">
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="preset-color-radio" data-color="#F2B5D4" id="palepink"><div class="color-block" style="background-color: #F2B5D4;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#C2E0E9" id="paleblue"><div class="color-block" style="background-color: #C2E0E9;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#E1D5E7" id="lavendar"><div class="color-block" style="background-color: #E1D5E7;"></div>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons" aria-label="Solid color button group">
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="preset-color-radio" data-color="#B0E0E6" id="powderblue"><div class="color-block" style="background-color: #B0E0E6;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#F7D5AA" id="palepeach"><div class="color-block" style="background-color: #F7D5AA;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#D5E8D4" id="mintgreen"><div class="color-block" style="background-color: #D5E8D4;"></div>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons" aria-label="Solid color button group">
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="preset-color-radio" data-color="#92A8D1" id="periwinkleblue"><div class="color-block" style="background-color: #92A8D1;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#E6AF75" id="apricot"><div class="color-block" style="background-color: #E6AF75;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#D9B5A5" id="dustyrose"><div class="color-block" style="background-color: #D9B5A5;"></div>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons" aria-label="Solid color button group">
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="preset-color-radio" data-color="#9AC1B7" id="seafoamgreen"><div class="color-block" style="background-color: #9AC1B7;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#D0B9C3" id="mauve"><div class="color-block" style="background-color: #D0B9C3;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#C4B7D9" id="lilac"><div class="color-block" style="background-color: #C4B7D9;"></div>
+                                        </label>
+                                    </div>
+                                    <!-- Deep colors -->
+                                    <h6 class="mb-1 mt-2">Deep colors</h6>
+                                    <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons" aria-label="Solid color button group">
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="preset-color-radio" data-color="#D72C6F" id="deeppink"><div class="color-block" style="background-color: #D72C6F;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#227FBF" id="deepblue"><div class="color-block" style="background-color: #227FBF;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#7E3F9D" id="deeplavender"><div class="color-block" style="background-color: #7E3F9D;"></div>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons" aria-label="Solid color button group">
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="preset-color-radio" data-color="#367F89" id="deeppowderblue"><div class="color-block" style="background-color: #367F89;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#FF713F" id="deeppeach"><div class="color-block" style="background-color: #FF713F;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#549F55" id="darkmintgreen"><div class="color-block" style="background-color: #549F55;"></div>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons" aria-label="Solid color button group">
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="preset-color-radio" data-color="#2B4771" id="deepperiwinkleblue"><div class="color-block" style="background-color: #2B4771;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#C55324" id="deepapricot"><div class="color-block" style="background-color: #C55324;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#954A3E" id="deepdustyrose"><div class="color-block" style="background-color: #954A3E;"></div>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons" aria-label="Solid color button group">
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="preset-color-radio" data-color="#457E70" id="deepseafoamgreen"><div class="color-block" style="background-color: #457E70;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#8B2C5A" id="deepmauve"><div class="color-block" style="background-color: #8B2C5A;"></div>
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="preset-color-radio" data-color="#7C5793" id="darklilac"><div class="color-block" style="background-color: #7C5793;"></div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group mt-2" id="bgImgGroup" style="display: none;">
+                                    <hr>
+                                    <h6 class="mb-1 mt-2">Background Image</h6>
+                                    <button type="button" class="btn btn-outline-primary" onClick="uploadBGImg()" id="bgImageUploadBtn">Upload image</button>
+                                    <h6 class="mb-1 mt-2">Image Effects</h6>
+                                    <label for="bgImageSizeSelect" class="form-label">Sizing:</label>
+                                    <select class="custom-select" id="bgImageSizeSelect">
+                                        <option value="auto">Automatic</option>
+                                        <option value="cover">Cover</option>
+                                        <option value="stretch">Stretch</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mt-2" id="textColorGroup" style="display: none;">
+                                    <hr>
+                                    <h6 class="mb-1 mt-2">Text Color Override</h6>
+                                    <div class="btn-group btn-group-toggle" data-toggle="buttons" aria-label="Text color override button group">
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="text-color-override-radio" id="tcovD" checked> Disable
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="text-color-override-radio" id="tcovO"> Enable
+                                        </label>
+                                    </div>
+                                    <div class="form-group mt-2">
+                                        <label for="textColorInput">Color: </label>
+                                        <input type="color" id="textColorInput" value="#ffffff" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseMV" aria-expanded="false" aria-controls="collapseMV">
+                                Display Options
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapseMV" class="accordion-collapse collapse" data-bs-parent="#menuAccordion">
+                            <div class="card-body">
+                                <h6 class="mb-1 mt-2">Menu Visibility</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="menuButtonVisible" checked>
+                                    <label class="form-check-label" for="menuButtonVisible">Show menu button</label>
+                                </div>
+                                <p class="mb-2" style="font-weight: lighter;">Double click the screen to make menu button visible again</p>
+                                <hr>
+                                <h6 class="mb-1 mt-2">Tab Title</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="menuTabTitleVisible" checked>
+                                    <label class="form-check-label" for="menuTabTitleVisible">Display time in tab title</label>
+                                </div>
+                                <h6 class="mb-1 mt-2">Fullscreen mode</h6>
+                                <button id="close-button" class="btn btn-primary mb-2" onclick="toggleFullscreen()">
+                                    Toggle View
+                                </button>
+                                <hr>
+                                <div class="form-check"><input class="form-check-input" type="checkbox" id="debugMode">
+                                    <label class="form-check-label" for="debugMode">Toggle debug logging</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseIE" aria-expanded="false" aria-controls="collapseIE">
+                                Import/Export Settings
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapseIE" class="accordion-collapse collapse" data-bs-parent="#menuAccordion">
+                            <div class="card-body">
+                                <h6 class="mb-1">Import settings</h6>
+                                <button type="button" class="btn btn-outline-primary" onClick="importSettingsFromJSON()">Upload from JSON</button>
+                                <p class="mb-1 mt-2">Or manually paste JSON settings instead:</p>
+                                <input class="form-control" type="text" placeholder="Paste in JSON here" data-bs-toggle="tooltip" aria-label="Manual JSON settings entry form" id="jsonImportTextarea">
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-outline-warning" id="jsonImportTextBtn" onClick="manualJSONImport()">Load settings</button>
+                                </div>
+                                <hr>
+                                <h6 class="mb-1">Built-in presets</h6>
+                                <p class="mb-1 mt-2">Import from preset settings:</p>
+                                <button type="button" class="btn btn-outline-info" onClick="presetLocalJSON('usdonlineclock-amoled-preset')">AMOLED theme</button>
+                                <button type="button" class="btn btn-outline-info" onClick="presetLocalJSON('usdonlineclock-digitsbinary-preset')">Hacker Green</button>
+                                <button type="button" class="btn btn-outline-info" onClick="presetLocalJSON('usdonlineclock-minimallight-preset')">Minimalist Light</button>
+                                <button type="button" class="btn btn-outline-info" onClick="presetLocalJSON('usdonlineclock-devfavorite-preset')">Simple blue</button>
+                                <hr>
+                                <h6 class="mb-1 mt-2">Export settings</h6>
+                                <button type="button" class="btn btn-outline-secondary" onClick="exportSettingsToJSON()">Download JSON file</button>
+                                <p class="mb-1 mt-2">Note: Custom font settings and Display Options are not saved.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="mb-1 mt-2">You've been here for:</p>
+                    <p class="mb-0" id="time-duration"></p>
+                    <hr>
+                    <!-- CHANGE BEFORE SERVING -->
+                    <span id="credit">By iKarTehFox, made possible with open-source projects <3</span>
+                    <a href="https://github.com/ikartehfox/web-clock/tree/compatibility" target="_blank">
+                        <p style="margin-top: -1.5px;"><b>View on GitHub!</b></p>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div id="clock-container">
+            <center id="time-container">
+                <span class="clock-part" id="hour-slot">00</span><span class="colon" id="colon1">:</span><span class="clock-part" id="minute-slot">00</span><span class="colon" id="colon2">:</span><span class="clock-part" id="second-slot">00</span><span id="indicator"></span>
+                <div id="seconds-progress-bar"></div>
+            </center>
+            <p id="date"><noscript>JavaScript is disabled!</noscript></p>
+        </div>
+    </body>
+</html>
+
+<!-- Hey, what are you doing in here? -->
+<!-- Didn't I tell you? There are no secrets here! Now, scram! -->

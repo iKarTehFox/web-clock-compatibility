@@ -1,0 +1,30 @@
+{
+	"clockConfig": {
+		"clockMode": "cmo12",
+		"clockDisplay": "words",
+		"secondsVis": "sviN",
+		"dateFormat": "DDDD",
+		"dateAlign": "dpoL",
+		"borderMode": "btyD",
+		"borderStyle": "solid",
+		"secondsBarVis": "sbaB"
+	},
+	"fontConfig": {
+		"fontFamily": "Montserrat",
+		"fontStyle": "fstR",
+		"fontWeight": "fweB",
+		"fontSize": "10vw",
+		"dropShadow": "2"
+	},
+	"colorTheme": {
+		"colorMode": "solidmode",
+		"solidColor": "#2B4771",
+		"textColorMode": "tcovD",
+		"textColorValue": "",
+		"bgImage": "",
+		"bgImageSize": "",
+		"bgImageBlur": ""
+	},
+	"exportTimestamp": "This is my favorite way to theme the clock, especially when testing and debugging! It's become a habit. -iKarTehFox",
+	"version": 6
+}

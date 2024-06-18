@@ -1,0 +1,25 @@
+You are using the compatibility variant of web-clock! Here's a list of important changes that were made to work with pre-ES6 browsers.
+
+Bootstrap:
+- Downgraded Bootstrap v5.3.3 to Bootstrap v4.6.2
+- Now requires jQuery
+- Removed tooltips
+- Converted all components to be compatible with Bootstrap 4
+- Removed dark mode toggle
+
+JavaScript:
+- Added core-js library (includes polyfills for ES6 and up)
+- Transpiled all JS code (except Luxon) to be compatible with ES5
+
+Iconify and Bootstrap Social CSS:
+- Removed completely
+
+Favicon
+- Converted .svg icons to 32x32 .ico
+
+Known issues:
+- Bootstrap accordions don't close as expected when other cards are opened
+- Bootstrap radio button selections don't clear as expected (vice versa when importing settings)
+- Color Fade mode may fail to disable sometimes
+- Certain fonts may fail to render on old browsers (system incompatibility, NOT website!)
+- Files are slightly larger (especially new core-js code) and may take longer to download
