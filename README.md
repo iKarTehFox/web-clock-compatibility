@@ -5,9 +5,9 @@
 
 # Online Web Clock (Compatibility version)
 > **An online digital clock web app built with Bootstrap 4.6.2, focused on browser compatibility!**  
-**Note:** This is designed to be compatible with ***ancient browsers***. For modern browsers, [**check out the main branch**](https://github.com/iKarTehFox/web-clock/tree/main)!
+**Note:** This is designed to be compatible with ***ancient browsers***. For modern browsers, [**check out the main repository**](https://github.com/iKarTehFox/web-clock)!
 
-**Website:** [View it in your browser!](https://compatibility.online-clock.pages.dev)
+**Website:** [View it in your browser!](https://online-clock-compatibility.pages.dev)
 
 ## Table of Contents
 - [How to Run](#how-to-run)
