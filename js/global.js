@@ -9,7 +9,7 @@ var menu = {
     clockmoderadio: document.querySelectorAll('input[name="clock-mode-radio"]'),
     timeMethodSelect: document.getElementById('timeMethodSelect'),
     secondsvisradio: document.querySelectorAll('input[name="seconds-vis-radio"]'),
-    secondsbarradio: document.querySelectorAll('input[name="seconds-bar-radio"]'),
+    timebarselect: document.getElementById('timeBarSelect'),
     datealignradio: document.querySelectorAll('input[name="date-position-radio"]'),
     themeradio: document.querySelectorAll('input[name="menu-theme-radio"]'),
     visCheckbox: document.getElementById('menuButtonVisible'),
@@ -31,6 +31,8 @@ var menu = {
     textcolorinput: document.getElementById('textColorInput'),
     bordertyperadio: document.querySelectorAll('input[name="border-type-radio"]'),
     borderstyleselect: document.getElementById('borderStyleSelect'),
+    customnoteinput: document.getElementById('customNoteInput'),
+    notealignradio: document.querySelectorAll('input[name="note-alignment-radio"]'),
     manualjsontextinput: document.getElementById('jsonImportTextarea'),
     durationdisplay: document.getElementById('time-duration')
 };
@@ -54,7 +56,8 @@ var dtdisplay = {
     secondSlot: document.getElementById('second-slot'),
     indicatorSlot: document.getElementById('indicator'),
     date: document.getElementById('date'),
-    secondsBar: document.getElementById('seconds-progress-bar')
+    customnote: document.getElementById('custom-note'),
+    timebar: document.getElementById('time-progress-bar')
 };
 
 // Define font sizes
@@ -100,25 +103,32 @@ menu.secondsvisradio.forEach(function (radio) {
     });
 });
 
-// Seconds bar visibility listener
-menu.secondsbarradio.forEach(function (radio) {
-    radio.addEventListener('change', function () {
-        var value = radio.dataset.value;
-        if (value === 'block') {
-            menu.bordertyperadio.forEach(function (btn) {
-                btn.disabled = true;
-                if (btn.id === 'btyD') {
-                    btn.checked = true;
-                    btn.dispatchEvent(new Event('change'));
-                }
-            });
-        } else {
-            menu.bordertyperadio.forEach(function (btn) {
-                btn.disabled = false;
-            });
+// Time bar listener
+menu.timebarselect.addEventListener('change', function () {
+    var value = menu.timebarselect.value;
+    if (value === 'tbarNone') {
+        dtdisplay.timebar.style.display = 'none';
+        // Re-enable border type options when time bar is off
+        menu.bordertyperadio.forEach(function (btn) {
+            btn.disabled = false;
+        });
+        if (menu.debugcheckbox.checked) {
+            console.log('DEBUG - Time bar hidden');
         }
-        dtdisplay.secondsBar.style.display = value;
-    });
+    } else {
+        dtdisplay.timebar.style.display = 'block';
+        // Disable border type options when time bar is active
+        menu.bordertyperadio.forEach(function (btn) {
+            btn.disabled = true;
+            if (btn.id === 'btyD') {
+                btn.checked = true;
+                btn.dispatchEvent(new Event('change'));
+            }
+        });
+        if (menu.debugcheckbox.checked) {
+            console.log('DEBUG - Time bar set to: '.concat(value));
+        }
+    }
 });
 
 // Date alignment listener
@@ -126,6 +136,26 @@ menu.datealignradio.forEach(function (radio) {
     radio.addEventListener('change', function () {
         var value = radio.dataset.value;
         dtdisplay.date.style.textAlign = value;
+    });
+});
+
+// Custom note input listener
+menu.customnoteinput.addEventListener('input', function () {
+    var noteText = menu.customnoteinput.value;
+    dtdisplay.customnote.textContent = noteText;
+    if (menu.debugcheckbox.checked) {
+        console.log('DEBUG - Custom note updated: '.concat(noteText));
+    }
+});
+
+// Note alignment listener
+menu.notealignradio.forEach(function (radio) {
+    radio.addEventListener('change', function () {
+        var value = radio.dataset.value;
+        dtdisplay.customnote.style.textAlign = value;
+        if (menu.debugcheckbox.checked) {
+            console.log('DEBUG - Note alignment set to: '.concat(value));
+        }
     });
 });
 
@@ -195,31 +225,24 @@ menu.bordertyperadio.forEach(function (radio) {
         menu.borderstyleselect.disabled = value === 'none';
         switch (value) {
         case 'none':
-            menu.secondsbarradio.forEach(function (btn) {
-                btn.disabled = false;
-            });
+            // Re-enable time bar when no border is selected
+            menu.timebarselect.disabled = false;
             dtdisplay.tcontainer.style.borderStyle = value;
             dtdisplay.tcontainer.style.borderBottomStyle = value;
             break;
         case 'regular':
-            menu.secondsbarradio.forEach(function (btn) {
-                btn.disabled = true;
-                if (btn.id === 'sbaN') {
-                    btn.checked = true;
-                    btn.dispatchEvent(new Event('change'));
-                }
-            });
+            // Disable time bar when border is active and set to none
+            menu.timebarselect.disabled = true;
+            menu.timebarselect.value = 'tbarNone';
+            menu.timebarselect.dispatchEvent(new Event('change'));
             dtdisplay.tcontainer.style.borderBottomStyle = 'none';
             dtdisplay.tcontainer.style.borderStyle = menu.borderstyleselect.value;
             break;
         case 'bottom':
-            menu.secondsbarradio.forEach(function (btn) {
-                btn.disabled = true;
-                if (btn.id === 'sbaN') {
-                    btn.checked = true;
-                    btn.dispatchEvent(new Event('change'));
-                }
-            });
+            // Disable time bar when border is active and set to none
+            menu.timebarselect.disabled = true;
+            menu.timebarselect.value = 'tbarNone';
+            menu.timebarselect.dispatchEvent(new Event('change'));
             dtdisplay.tcontainer.style.borderStyle = 'none';
             dtdisplay.tcontainer.style.borderBottomStyle = menu.borderstyleselect.value;
             break;

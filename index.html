@@ -123,13 +123,28 @@
                                     <option value="dotted">Dotted</option>
                                     <option value="double">Double</option>
                                 </select>
-                                <h6 class="mb-1 mt-2">Seconds Bar Visibility</h6>
-                                <div class="btn-group btn-group-toggle" data-toggle="buttons" aria-label="Seconds bar visibility button group">
+                                <h6 class="mb-1 mt-2">Time Bar</h6>
+                                <select class="custom-select" id="timeBarSelect">
+                                    <option value="tbarNone" selected>Off</option>
+                                    <option value="tbarWeekday">Week progress</option>
+                                    <option value="tbarMonth">Month progress</option>
+                                    <option value="tbarDay">Day progress</option>
+                                    <option value="tbarHour">Hour progress</option>
+                                    <option value="tbarSec">Seconds progress</option>
+                                </select>
+                                <hr>
+                                <h6 class="mb-1 mt-2">Custom Note</h6>
+                                <input class="form-control mb-2" type="text" placeholder="Enter custom note text" aria-label="Custom note input" id="customNoteInput" maxlength="100">
+                                <h6 class="mb-1 mt-2">Note Alignment</h6>
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons" aria-label="Note alignment button group">
                                     <label class="btn btn-secondary active">
-                                        <input type="radio" name="seconds-bar-radio" data-value="none" id="sbaN" checked> Hide
+                                        <input type="radio" name="note-alignment-radio" data-value="left" id="ntoL" checked> Left
                                     </label>
                                     <label class="btn btn-secondary">
-                                        <input type="radio" name="seconds-bar-radio" data-value="block" id="sbaB"> Show
+                                        <input type="radio" name="note-alignment-radio" data-value="center" id="ntoC"> Center
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="note-alignment-radio" data-value="right" id="ntoR"> Right
                                     </label>
                                 </div>
                             </div>
@@ -476,9 +491,10 @@
         <div id="clock-container">
             <center id="time-container">
                 <span class="clock-part" id="hour-slot">00</span><span class="colon" id="colon1">:</span><span class="clock-part" id="minute-slot">00</span><span class="colon" id="colon2">:</span><span class="clock-part" id="second-slot">00</span><span id="indicator"></span>
-                <div id="seconds-progress-bar"></div>
+                <div id="time-progress-bar"></div>
             </center>
             <p id="date"><noscript>JavaScript is disabled!</noscript></p>
+            <p id="custom-note"></p>
         </div>
     </body>
 </html>

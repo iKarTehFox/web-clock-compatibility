@@ -22,7 +22,7 @@ menu.colormoderadio.forEach(function (radio) {
     radio.addEventListener('change', function () {
     // Reset color to "black" first
         dtdisplay.ccontainer.style.color = '#212529';
-        dtdisplay.secondsBar.style.backgroundColor = '#212529';
+        dtdisplay.timebar.style.backgroundColor = '#212529';
         var colorMode = radio.id;
         var bodyElement = document.body;
         if (colorMode === 'fademode') {

@@ -12,7 +12,7 @@ menu.textcoloroverrideradio.forEach(function (radio) {
                     document.querySelector('input[name="preset-color-radio"]:checked').dispatchEvent(new Event('change'));
                 } catch (error) {
                     dtdisplay.ccontainer.style.color = '#212529';
-                    dtdisplay.secondsBar.style.backgroundColor = '#212529';
+                    dtdisplay.timebar.style.backgroundColor = '#212529';
                 }
             }
         } else {
@@ -24,7 +24,7 @@ menu.textcoloroverrideradio.forEach(function (radio) {
 });
 menu.textcolorinput.addEventListener('input', function () {
     dtdisplay.ccontainer.style.color = this.value;
-    dtdisplay.secondsBar.style.backgroundColor = this.value;
+    dtdisplay.timebar.style.backgroundColor = this.value;
 });
 
 // Preset color buttons listener
@@ -37,10 +37,10 @@ menu.presetcolors.forEach(function (radio) {
         // Set the text color based on the background luminance
         if (luminance > 0.62 && tcoO === 0) {
             dtdisplay.ccontainer.style.color = '#212529'; // Set black text color
-            dtdisplay.secondsBar.style.backgroundColor = '#212529';
+            dtdisplay.timebar.style.backgroundColor = '#212529';
         } else if (tcoO === 0) {
             dtdisplay.ccontainer.style.color = '#FFF'; // Set white text color
-            dtdisplay.secondsBar.style.backgroundColor = '#FFF';
+            dtdisplay.timebar.style.backgroundColor = '#FFF';
         }
     });
 });

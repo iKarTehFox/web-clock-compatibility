@@ -24,7 +24,9 @@ function exportSettingsToJSON() {
             dateAlign: document.querySelector('input[name="date-position-radio"]:checked').id,
             borderMode: document.querySelector('input[name="border-type-radio"]:checked').id,
             borderStyle: menu.borderstyleselect.value,
-            secondsBarVis: document.querySelector('input[name="seconds-bar-radio"]:checked').id
+            timeBar: menu.timebarselect.value,
+            customNote: menu.customnoteinput.value,
+            customNoteAlign: document.querySelector('input[name="note-alignment-radio"]:checked').id
         },
         fontConfig: {
             fontFamily: font.familysel.value,
@@ -43,7 +45,7 @@ function exportSettingsToJSON() {
             bgImageBlur: document.querySelector('input[name="color-mode-radio"]:checked').id == 'imgmode' ? menu.imageblurrange.value : ''
         },
         exportTimestamp: timeExported,
-        version: 6
+        version: 'compatibility-1'
     };
     var settingsJSON = JSON.stringify(usersettings);
     var blob = new Blob([settingsJSON], {
@@ -160,12 +162,17 @@ function updateClockSettings(importedSettings) {
     document.querySelector('input[name="seconds-vis-radio"][id="'.concat(clockConfig.secondsVis, '"]')).checked = true;
     menu.dateformselect.value = clockConfig.dateFormat;
     document.querySelector('input[name="date-position-radio"][id="'.concat(clockConfig.dateAlign, '"]')).checked = true;
-    if (clockConfig.secondsBarVis === 'sbaN') {
-        document.querySelector('input[name="border-type-radio"][id="'.concat(clockConfig.borderMode, '"]')).checked = true;
-    }
+    document.querySelector('input[name="border-type-radio"][id="'.concat(clockConfig.borderMode, '"]')).checked = true;
     menu.borderstyleselect.value = clockConfig.borderStyle;
-    if (clockConfig.borderMode === 'btyD') {
-        document.querySelector('input[name="seconds-bar-radio"][id="'.concat(clockConfig.secondsBarVis, '"]')).checked = true;
+    if (clockConfig.timeBar) {
+        menu.timebarselect.value = clockConfig.timeBar;
+    }
+    if (clockConfig.customNote) {
+        menu.customnoteinput.value = clockConfig.customNote;
+        dtdisplay.customnote.textContent = clockConfig.customNote;
+    }
+    if (clockConfig.customNoteAlign) {
+        document.querySelector('input[name="note-alignment-radio"][id="'.concat(clockConfig.customNoteAlign, '"]')).checked = true;
     }
 
     // Update fontConfig settings
@@ -200,7 +207,12 @@ function updateClockSettings(importedSettings) {
     document.querySelector('input[name="date-position-radio"][id="'.concat(clockConfig.dateAlign, '"]')).dispatchEvent(new Event('change'));
     document.querySelector('input[name="border-type-radio"][id="'.concat(clockConfig.borderMode, '"]')).dispatchEvent(new Event('change'));
     menu.borderstyleselect.dispatchEvent(new Event('change'));
-    document.querySelector('input[name="seconds-bar-radio"][id="'.concat(clockConfig.secondsBarVis, '"]')).dispatchEvent(new Event('change'));
+    if (clockConfig.timeBar) {
+        menu.timebarselect.dispatchEvent(new Event('change'));
+    }
+    if (clockConfig.customNoteAlign) {
+        document.querySelector('input[name="note-alignment-radio"][id="'.concat(clockConfig.customNoteAlign, '"]')).dispatchEvent(new Event('change'));
+    }
     font.familysel.dispatchEvent(new Event('change'));
     document.querySelector('input[name="font-style-radio"][id="'.concat(fontConfig.fontStyle, '"]')).dispatchEvent(new Event('change'));
     document.querySelector('input[name="font-weight-radio"][id="'.concat(fontConfig.fontWeight, '"]')).dispatchEvent(new Event('change'));
@@ -240,7 +252,8 @@ var valid = {
     DA: ['dpoL', 'dpoC', 'dpoR'],
     BM: ['btyD', 'btyR', 'btyB'],
     BS: ['solid', 'dashed', 'dotted', 'double'],
-    SB: ['', 'sbaB', 'sbaN'],
+    TB: ['tbarNone', 'tbarWeekday', 'tbarMonth', 'tbarDay', 'tbarHour', 'tbarSec'],
+    NA: ['ntoL', 'ntoC', 'ntoR'],
     FF: ['', 'Lato', 'Montserrat', 'Open Sans', 'Oswald', 'Poppins', 'Roboto', 'Tektur', 'Ubuntu', 'Ubuntu Mono', 'Dancing Script', 'Merriweather', 'Nanum Brush Script', 'Pangolin'],
     FS: ['fstR', 'fstI'],
     FW: ['fweL', 'fweN', 'fweB'],
@@ -250,7 +263,7 @@ var valid = {
     SC: ['#FF0000', '#FFA500', '#FFFF00', '#00FF00', '#0000FF', '#FF00FF', '#FFFFFF', '#808080', '#000000', '#F2B5D4', '#C2E0E9', '#E1D5E7', '#B0E0E6', '#F7D5AA', '#D5E8D4', '#92A8D1', '#E6AF75', '#D9B5A5', '#9AC1B7', '#D0B9C3', '#C4B7D9', '#D72C6F', '#227FBF', '#7E3F9D', '#367F89', '#FF713F', '#549F55', '#2B4771', '#C55324', '#954A3E', '#457E70', '#8B2C5A', '#7C5793'],
     TCM: ['tcovD', 'tcovO'],
     BIS: ['', 'auto', 'cover', 'stretch'],
-    Ver: [5, 6]
+    Ver: ['compatibility-1']
 };
 function containsValue(array, value) {
     if (menu.debugcheckbox.checked) {console.log("DEBUG - Checking if array ".concat(array, " contains value: ").concat(value));}
@@ -332,18 +345,26 @@ function verifySettingsJSON(jsonData) {
             value: clockConfig.borderStyle
         };
     }
-    if (!containsValue(valid.SB, clockConfig.secondsBarVis)) {
+    if (clockConfig.timeBar && !containsValue(valid.TB, clockConfig.timeBar)) {
         return {
             type: 'invalid',
-            subkey: 'secondsBarVis',
-            value: clockConfig.secondsBarVis
+            subkey: 'timeBar',
+            value: clockConfig.timeBar
         };
     }
-    if ((clockConfig.borderMode === 'btyB' || clockConfig.borderMode === 'btyR') && clockConfig.secondsBarVis === 'sbaB') {
+    if (clockConfig.customNoteAlign && !containsValue(valid.NA, clockConfig.customNoteAlign)) {
         return {
             type: 'invalid',
-            subkey: 'borderMode, secondsBarVis',
-            value: ''.concat(clockConfig.borderMode, ', ').concat(clockConfig.secondsBarVis)
+            subkey: 'customNoteAlign',
+            value: clockConfig.customNoteAlign
+        };
+    }
+    // Check incompatibility: borders and time bars are mutually exclusive
+    if ((clockConfig.borderMode === 'btyB' || clockConfig.borderMode === 'btyR') && clockConfig.timeBar && clockConfig.timeBar !== 'tbarNone') {
+        return {
+            type: 'invalid',
+            subkey: 'borderMode, timeBar',
+            value: ''.concat(clockConfig.borderMode, ', ').concat(clockConfig.timeBar)
         };
     }
 

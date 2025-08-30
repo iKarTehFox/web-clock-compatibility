@@ -27,6 +27,43 @@ function updatePageDuration() {
     menu.durationdisplay.textContent = ''.concat(hours, 'h, ').concat(minutes, 'm, and ').concat(seconds, 's');
 }
 
+// Time bar progress update function
+function updateTimeBar(time) {
+    var timeBarType = menu.timebarselect.value;
+    
+    switch (timeBarType) {
+        case 'tbarWeekday': // Week progress (1=Monday, 7=Sunday)
+            var weekProgress = time.weekday / 7 * 100;
+            dtdisplay.timebar.style.width = weekProgress + '%';
+            break;
+            
+        case 'tbarMonth': // Month progress
+            var monthProgress = time.day / time.daysInMonth * 100;
+            dtdisplay.timebar.style.width = monthProgress + '%';
+            break;
+            
+        case 'tbarDay': // Day progress
+            var totalMinutes = (time.hour * 60) + time.minute;
+            var dayProgress = totalMinutes / 1440 * 100; // 1440 minutes in a day
+            dtdisplay.timebar.style.width = dayProgress + '%';
+            break;
+            
+        case 'tbarHour': // Hour progress
+            var hourProgress = time.minute / 60 * 100;
+            dtdisplay.timebar.style.width = hourProgress + '%';
+            break;
+            
+        case 'tbarSec': // Seconds progress (minute progress)
+            var secProgress = time.second / 60 * 100;
+            dtdisplay.timebar.style.width = secProgress + '%';
+            break;
+            
+        default: // tbarNone or unknown
+            dtdisplay.timebar.style.width = '0%';
+            break;
+    }
+}
+
 // Clock mode radio
 menu.clockmoderadio.forEach(function (radio) {
     radio.addEventListener('change', function () {
@@ -57,9 +94,8 @@ function updateTime() {
     }
     
 
-    // Seconds progress bar
-    var secBarWidth = sec / 59 * 100;
-    dtdisplay.secondsBar.style.width = ''.concat(secBarWidth, '%');
+    // Time progress bar
+    updateTimeBar(time);
 
     // Time display methods
     var timeDisplayFunctions = {

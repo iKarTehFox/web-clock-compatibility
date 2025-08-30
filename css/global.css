@@ -32,6 +32,14 @@ body {
     padding-top: 5px;
 }
 
+#custom-note {
+    font-size: 1.2vw;
+    padding-top: 3px;
+    margin: 0;
+    color: inherit;
+    text-align: left;
+}
+
 /* Menu CSS */
 #menu-container {
     position: absolute;
@@ -70,8 +78,8 @@ body {
     font-weight: bold;
 }
 
-/* Seconds progress bar */
-#seconds-progress-bar {
+/* Time progress bar */
+#time-progress-bar {
   position: absolute;
   bottom: 1;
   height: 5px;
